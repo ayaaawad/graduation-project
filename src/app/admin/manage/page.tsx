@@ -384,6 +384,13 @@ export default function ManageProductsPage() {
           onSubmit={handleFormSubmit}
           onClose={() => setShowForm(false)}
           onInputChange={handleInputChange}
+          onImageUrlChange={(index: number, value: string) => {
+            setFormData(prev => {
+              const newImages = [...prev.images];
+              newImages[index] = value;
+              return { ...prev, images: newImages };
+            });
+          }}
         />
       )}
 
@@ -412,13 +419,18 @@ function ProductFormModal({
   onSubmit,
   onClose,
   onInputChange,
+  onImageUrlChange,
 }: {
   formData: FormData;
   editingId: string | null;
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, path: string[]) => void;
+  onImageUrlChange: (index: number, value: string) => void;
 }) {
+  const handleImageUrlChange = (index: number, value: string) => {
+    onImageUrlChange(index, value);
+  };
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-slate-800 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -698,11 +710,7 @@ function ProductFormModal({
                   type="text"
                   placeholder="https://example.com/image1.webp"
                   value={formData.images[0] || ''}
-                  onChange={(e) => {
-                    const newImages = [...formData.images];
-                    newImages[0] = e.target.value;
-                    setFormData({ ...formData, images: newImages });
-                  }}
+                  onChange={(e) => handleImageUrlChange(0, e.target.value)}
                   className="bg-slate-700/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-slate-400 w-full"
                 />
               </div>
@@ -715,11 +723,7 @@ function ProductFormModal({
                   type="text"
                   placeholder="https://example.com/image2.webp"
                   value={formData.images[1] || ''}
-                  onChange={(e) => {
-                    const newImages = [...formData.images];
-                    newImages[1] = e.target.value;
-                    setFormData({ ...formData, images: newImages });
-                  }}
+                  onChange={(e) => handleImageUrlChange(1, e.target.value)}
                   className="bg-slate-700/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-slate-400 w-full"
                 />
               </div>
@@ -732,11 +736,7 @@ function ProductFormModal({
                   type="text"
                   placeholder="https://example.com/image3.webp"
                   value={formData.images[2] || ''}
-                  onChange={(e) => {
-                    const newImages = [...formData.images];
-                    newImages[2] = e.target.value;
-                    setFormData({ ...formData, images: newImages });
-                  }}
+                  onChange={(e) => handleImageUrlChange(2, e.target.value)}
                   className="bg-slate-700/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-slate-400 w-full"
                 />
               </div>
@@ -749,11 +749,7 @@ function ProductFormModal({
                   type="text"
                   placeholder="https://example.com/image4.webp"
                   value={formData.images[3] || ''}
-                  onChange={(e) => {
-                    const newImages = [...formData.images];
-                    newImages[3] = e.target.value;
-                    setFormData({ ...formData, images: newImages });
-                  }}
+                  onChange={(e) => handleImageUrlChange(3, e.target.value)}
                   className="bg-slate-700/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-slate-400 w-full"
                 />
               </div>
