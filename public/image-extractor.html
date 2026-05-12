@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laptop Image URL Extractor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 2.5em;
+    }
+
+    .instructions {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .instructions h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    .instructions li {
+      margin-bottom: 12px;
+    }
+
+    .instructions code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      color: #d63384;
+    }
+
+    .extractor {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .results {
+      margin-top: 25px;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+    }
+
+    .results h3 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .url-input-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .url-input-group .form-group {
+      margin-bottom: 0;
+    }
+
+    .url-input-group label {
+      font-size: 0.9em;
+    }
+
+    .url-input-group input {
+      padding: 10px;
+      font-size: 0.9em;
+    }
+
+    .export-btn {
+      background: #28a745;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .export-btn:hover {
+      background: #218838;
+    }
+
+    .copy-btn {
+      background: #17a2b8;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+
+    .copy-btn:hover {
+      background: #138496;
+    }
+
+    .json-output {
+      background: white;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #333;
+    }
+
+    .success-msg {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .info-note {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 4px;
+      color: #1565c0;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Laptop Image URL Extractor</h1>
+
+    <div class="instructions">
+      <h2>How to Extract Image URLs from Google Images</h2>
+      <ol>
+        <li>For each laptop and view (front, side, back, top), open the Google Images search URL provided in the JSON</li>
+        <li>Find a high-quality product photo on a white/neutral background (at least 1000px wide)</li>
+        <li>Right-click on the image and select "Open image in new tab"</li>
+        <li>Copy the image URL from the browser address bar (it will be a long URL with image hosting domain)</li>
+        <li>Paste the URL in the form below for each laptop and view</li>
+        <li>Click "Export JSON" to generate the mapping file</li>
+        <li>Save as <code>laptop-direct-image-urls.json</code> in your project root</li>
+        <li>Run: <code>npm run download-images</code></li>
+      </ol>
+    </div>
+
+    <div class="info-note">
+      💡 <strong>Pro tip:</strong> Try to select product images from reputable sources (manufacturer sites, Amazon, etc.) that appear in Google Images for better quality and consistency.
+    </div>
+
+    <div class="extractor">
+      <div id="formContainer"></div>
+
+      <button onclick="exportJSON()" class="export-btn">📥 Export JSON (laptop-direct-image-urls.json)</button>
+      <button onclick="clearForm()" class="export-btn" style="background: #dc3545; margin-top: 10px;">🔄 Clear All</button>
+
+      <div id="jsonOutput" class="results" style="display: none; margin-top: 20px;">
+        <h3>Generated JSON (Copy this to laptop-direct-image-urls.json)</h3>
+        <button onclick="copyToClipboard()" class="copy-btn">📋 Copy JSON</button>
+        <div id="jsonContent" class="json-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const laptops = [
+      "Alienware m16 R2",
+      "ASUS ROG Zephyrus G16",
+      "MSI Stealth 16 Studio",
+      "Lenovo Legion Pro 7i",
+      "HP Victus 16",
+      "Dell XPS 13 Plus",
+      "HP Spectre x360 14",
+      "Lenovo ThinkPad X1 Carbon Gen 12",
+      "Dell Latitude 7440",
+      "Apple MacBook Air M2",
+      "Acer Swift Go 14",
+      "Lenovo IdeaPad 3",
+      "HP Pavilion 15",
+      "Dell Inspiron 14",
+      "ASUS VivoBook 15",
+      "Razer Blade 15",
+      "Acer Predator Helios 16",
+      "Lenovo Yoga 9i 14",
+      "Microsoft Surface Laptop 6",
+      "Dell G15 5530",
+      "ASUS Zenbook 14 OLED",
+      "Lenovo ThinkBook 14 Gen 6"
+    ];
+
+    const views = ['front', 'side', 'back', 'top'];
+
+    function initializeForm() {
+      const container = document.getElementById('formContainer');
+      container.innerHTML = '';
+
+      laptops.forEach(laptop => {
+        const section = document.createElement('fieldset');
+        section.style.cssText = `
+          border: 2px solid #e0e0e0;
+          padding: 20px;
+          margin-bottom: 20px;
+          border-radius: 6px;
+          background: #fafafa;
+        `;
+
+        const legend = document.createElement('legend');
+        legend.style.cssText = `
+          font-weight: 600;
+          color: #333;
+          font-size: 1.1em;
+          padding: 0 10px;
+        `;
+        legend.textContent = `📱 ${laptop}`;
+        section.appendChild(legend);
+
+        const urlGroup = document.createElement('div');
+        urlGroup.className = 'url-input-group';
+
+        views.forEach(view => {
+          const group = document.createElement('div');
+          group.className = 'form-group';
+
+          const label = document.createElement('label');
+          label.htmlFor = `${laptop}-${view}`;
+          label.textContent = `${view.charAt(0).toUpperCase() + view.slice(1)} View URL`;
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.id = `${laptop}-${view}`;
+          input.placeholder = 'Paste image URL here...';
+
+          group.appendChild(label);
+          group.appendChild(input);
+          urlGroup.appendChild(group);
+        });
+
+        section.appendChild(urlGroup);
+        container.appendChild(section);
+      });
+    }
+
+    function generateJSON() {
+      const result = {};
+
+      laptops.forEach(laptop => {
+        result[laptop] = {};
+        views.forEach(view => {
+          const inputId = `${laptop}-${view}`;
+          const input = document.getElementById(inputId);
+          result[laptop][view] = input.value.trim() || null;
+        });
+      });
+
+      return result;
+    }
+
+    function exportJSON() {
+      const jsonData = generateJSON();
+      const jsonStr = JSON.stringify(jsonData, null, 2);
+
+      document.getElementById('jsonContent').textContent = jsonStr;
+      document.getElementById('jsonOutput').style.display = 'block';
+
+      // Also trigger download
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+      element.setAttribute('download', 'laptop-direct-image-urls.json');
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    function copyToClipboard() {
+      const jsonContent = document.getElementById('jsonContent').textContent;
+      navigator.clipboard.writeText(jsonContent).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => {
+          btn.textContent = original;
+        }, 2000);
+      });
+    }
+
+    function clearForm() {
+      if (confirm('Clear all URLs? This cannot be undone.')) {
+        laptops.forEach(laptop => {
+          views.forEach(view => {
+            const inputId = `${laptop}-${view}`;
+            const input = document.getElementById(inputId);
+            input.value = '';
+          });
+        });
+        document.getElementById('jsonOutput').style.display = 'none';
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener('load', initializeForm);
+  </script>
+</body>
+</html>

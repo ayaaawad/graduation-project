@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connectToDatabase } from "@/lib/mongoose";
 import Product from "@/models/Product";
 import ClientProductGallery from "./ClientProductGallery";
+import LaptopGallery from "@/components/LaptopGallery";
 
 type ProductPageProps = {
   params: Promise<{
@@ -47,6 +48,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const images = product.images?.length ? product.images : product.image ? [product.image] : [];
 
+  // Check if we have all 4 angles (front, side, back, top)
+  const hasAllAngles = images.length === 4 && images.every((img) => img && img.trim());
+
+  const angleImages = hasAllAngles ? {
+    front: images[0],
+    side: images[1],
+    back: images[2],
+    top: images[3]
+  } : null;
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
       <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-[0_24px_70px_rgba(2,6,23,0.45)] backdrop-blur-xl sm:p-8">
@@ -75,7 +86,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {images.length > 0 && (
               <div className="mt-6">
-                <ClientProductGallery images={images} productName={`${product.brand} ${product.modelName}`} productId={product._id} />
+                {angleImages && hasAllAngles ? (
+                  <LaptopGallery 
+                    images={angleImages}
+                    productName={`${product.brand} ${product.modelName}`}
+                    brandModel={`${product.brand} ${product.modelName}`}
+                  />
+                ) : (
+                  <ClientProductGallery images={images} productName={`${product.brand} ${product.modelName}`} productId={product._id} />
+                )}
               </div>
             )}
 

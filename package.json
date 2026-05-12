@@ -10,7 +10,9 @@
     "seed": "tsx scripts/seed.ts",
     "seed:admin": "tsx scripts/seedAdmin.ts",
     "clear-images": "tsx scripts/clearImages.ts",
-    "fetch-images": "tsx scripts/fetchImages.ts"
+    "fetch-images": "tsx scripts/fetchImages.ts",
+    "download-images": "tsx scripts/downloadLaptopImages.ts",
+    "sync-images": "tsx scripts/syncImagesToDatabase.ts"
   },
   "dependencies": {
     "@radix-ui/react-tabs": "^1.0.4",
