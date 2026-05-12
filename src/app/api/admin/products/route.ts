@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
+    const filteredImages = images && images.length > 0 ? images.filter((img: string) => img && img.trim() !== '') : [];
+    const mainImage = image || (filteredImages.length > 0 ? filteredImages[0] : '');
+
     const product = await Product.create({
       brand,
       modelName,
@@ -96,8 +99,8 @@ export async function POST(request: NextRequest) {
       battery,
       gpu,
       aiFeatures,
-      image: image || "",
-      images: images && images.length > 0 ? images.filter((img: string) => img.trim() !== '') : [],
+      image: mainImage,
+      images: filteredImages,
     });
 
     return NextResponse.json(

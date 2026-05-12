@@ -15,7 +15,16 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const body = await request.json();
+    let body = await request.json();
+
+    // Update main image field from images array if images are provided
+    if (body.images && Array.isArray(body.images)) {
+      const filteredImages = body.images.filter((img: string) => img && img.trim() !== '');
+      body.images = filteredImages;
+      if (!body.image && filteredImages.length > 0) {
+        body.image = filteredImages[0];
+      }
+    }
 
     await connectToDatabase();
 
